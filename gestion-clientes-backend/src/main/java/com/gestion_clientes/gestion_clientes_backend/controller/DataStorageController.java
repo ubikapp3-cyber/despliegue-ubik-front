@@ -27,6 +27,7 @@ import java.util.Map;
 public class DataStorageController {
     
     private static final String DATA_DIRECTORY = "data/json-exports";
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB limit
     private final ObjectMapper objectMapper;
     
     public DataStorageController() {
@@ -51,7 +52,28 @@ public class DataStorageController {
     }
     
     /**
-     * Endpoint para guardar datos en archivo JSON
+     * Sanitize filename to prevent path traversal attacks
+     */
+    private String sanitizeFilename(String filename) {
+        if (filename == null || filename.isEmpty()) {
+            return "data-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + ".json";
+        }
+        
+        // Remove any path separators and dangerous characters
+        filename = filename.replaceAll("[/\\\\]", "")
+                          .replaceAll("\\.\\.", "")
+                          .replaceAll("[^a-zA-Z0-9._-]", "_");
+        
+        // Ensure .json extension
+        if (!filename.endsWith(".json")) {
+            filename += ".json";
+        }
+        
+        return filename;
+    }
+    
+    /**
+     * Endpoint for guardar datos en archivo JSON
      * POST /api/data/save
      * 
      * Body ejemplo:
@@ -65,18 +87,18 @@ public class DataStorageController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // Validar filename
-            String filename = request.getFilename();
-            if (filename == null || filename.isEmpty()) {
-                filename = "data-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + ".json";
+            // Sanitize and validate filename
+            String filename = sanitizeFilename(request.getFilename());
+            
+            // Validate data size
+            String jsonString = objectMapper.writeValueAsString(request.getData());
+            if (jsonString.length() > MAX_FILE_SIZE) {
+                response.put("success", false);
+                response.put("message", "Data size exceeds maximum allowed size of " + (MAX_FILE_SIZE / 1024 / 1024) + " MB");
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(response);
             }
             
-            // Asegurar que el filename tenga extensión .json
-            if (!filename.endsWith(".json")) {
-                filename += ".json";
-            }
-            
-            // Crear ruta completa del archivo
+            // Create ruta completa del archivo
             Path filePath = Paths.get(DATA_DIRECTORY, filename);
             
             // Escribir datos en archivo JSON con formato
@@ -158,10 +180,8 @@ public class DataStorageController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // Asegurar extensión .json
-            if (!filename.endsWith(".json")) {
-                filename += ".json";
-            }
+            // Sanitize filename
+            filename = sanitizeFilename(filename);
             
             Path filePath = Paths.get(DATA_DIRECTORY, filename);
             
@@ -198,10 +218,8 @@ public class DataStorageController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // Asegurar extensión .json
-            if (!filename.endsWith(".json")) {
-                filename += ".json";
-            }
+            // Sanitize filename
+            filename = sanitizeFilename(filename);
             
             Path filePath = Paths.get(DATA_DIRECTORY, filename);
             

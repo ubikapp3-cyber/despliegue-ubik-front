@@ -60,9 +60,6 @@ const RegisterSelect = () => {
       categoria: '',
       mensaje: '',
     });
-
-    // Log to console for debugging (optional, can be removed)
-    console.log('Datos guardados:', dataWithTimestamp);
   };
 
   /**
