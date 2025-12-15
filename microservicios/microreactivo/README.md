@@ -16,7 +16,7 @@ SOURCE mysql-init.sql;
 ## Cómo ejecutar (sin Docker)
 En terminales separadas:
 ```bash
-mvn -q -pl customers -am spring-boot:run
+mvn -q -pl MotelManagemement -am spring-boot:run
 mvn -q -pl products  -am spring-boot:run
 mvn -q -pl orders    -am spring-boot:run
 mvn -q -pl gateway   -am spring-boot:run

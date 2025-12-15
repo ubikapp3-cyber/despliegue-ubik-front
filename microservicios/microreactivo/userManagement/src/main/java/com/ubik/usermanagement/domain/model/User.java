@@ -1,17 +1,18 @@
 package com.ubik.usermanagement.domain.model;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import java.time.LocalDateTime;
 
-@Table("users")
 public record User(
-        @Id Long id,
+        Long id,
         String username,
         String password,
         String email,
-        String role,
+        String phoneNumber,
+        LocalDateTime createdAt,
+        boolean anonymous,
+        Integer roleId,
         String resetToken,
-        java.time.LocalDateTime resetTokenExpiry
+        LocalDateTime resetTokenExpiry
 ) {
 }
 
