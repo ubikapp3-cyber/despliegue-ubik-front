@@ -2,6 +2,10 @@
 
 Esta guía proporciona toda la información necesaria para integrar el frontend Angular con los microservicios backend de la aplicación Ubik.
 
+> **🎯 CONFIGURACIÓN COMPLETADA**: El frontend ya está configurado para consumir el backend en producción.  
+> **Ver**: `QUICKSTART.md` para empezar a usar la integración inmediatamente.  
+> **Ver**: `BACKEND_CONFIG.md` para detalles técnicos de la configuración.
+
 ## 📋 Índice
 
 1. [Arquitectura General](#arquitectura-general)
@@ -31,16 +35,30 @@ El sistema está compuesto por:
 ### Flujo de Comunicación
 
 ```
-Frontend (Angular) → API Gateway (8080) → Microservicios (8081, 8082, 8083)
+Frontend (Angular) → API Gateway (https://ubik-back.duckdns.org) → Microservicios (8081, 8082, 8083)
 ```
 
-**URL Base para todas las peticiones**: `http://localhost:8080/api`
+**URL Base para todas las peticiones**: 
+- **Producción**: `https://ubik-back.duckdns.org/api`
+- **Desarrollo Local** (backend local): `http://localhost:8080/api`
+
+> **✅ El frontend está configurado para usar**: `https://ubik-back.duckdns.org/api`
 
 ---
 
 ## ⚙️ Configuración de Entorno
 
-### Variables de Entorno Necesarias
+### Frontend ya configurado
+
+El frontend ya incluye:
+- ✅ Archivos de environment (`src/environments/`)
+- ✅ HttpClient con soporte fetch
+- ✅ Ejemplos de servicios API en `src/app/services/api-examples/`
+- ✅ Interceptor JWT para autenticación automática
+
+**Ver `BACKEND_CONFIG.md` y `QUICKSTART.md` para más detalles.**
+
+### Variables de Entorno Necesarias (Backend)
 
 Para el API Gateway y microservicios:
 
